@@ -1,0 +1,101 @@
+load_pretrained: False
+strict_load: False
+#pretrained_path: "./logs/ckpts/RTSR_N8_epochs600.pth"  ## for mini
+pretrained_path: "./logs/ckpts/RTSR_N16_epochs180.pth"  ## for standard
+
+name: RTSR
+
+loggers:
+  log_images: True
+
+network:
+  target: models.arch.RTSR  ## teacher network, use it to train and evaluate teacher model
+#  target: models.student.StudentNet  ## only use for test student model, setup this by uncommenting it
+  params:
+    sr_rate: 4
+    N: 16  ## number of channel size, for mini is 8
+
+#network:  ## mini
+#  target: models.mini_arch.RTSR  ## teacher network, use it to train and evaluate teacher model
+##  target: models.student.StudentNet  ## only use for test student model, setup this by uncommenting it
+#  params:
+#    sr_rate: 4
+#    N: 8  ## number of channel size, for mini is 8
+
+
+trainer:
+  base_lr_rate: 5e-5
+  num_epochs: 50
+  use_Y_channel_in_val: True
+  check_val_every_n_epoch: 1  # make sure this number < epochs, otherwiese checkpoint maynot saved
+
+  lr_scheduler:
+#    warmup_steps: 300  # Number of warmup steps
+    target: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+    params:
+      T_0: 1000  # Number of iterations for the first restart
+      T_mult: 1  # Factor by which the cycle length increases
+      eta_min: 1e-7  # Minimum learning rate
+
+
+data:
+  train:
+    lr_path: ["~/Documents/datasets/div2k/own/train/LR"]  ## apply batch size: 6
+    hr_path: ["~/Documents/datasets/div2k/own/train/HR"]  ## apply batch size: 6
+#    lr_path: ["~/Documents/datasets/Flickr2K/own/train/LR"]
+#    hr_path: ["~/Documents/datasets/Flickr2K/own/train/HR"]
+
+    augment: True
+    scale: 4
+    patch_cropsize: False
+    pool_lr: True
+    pool_hr: True
+    is_train: True
+
+  val:
+    lr_path: ["~/Documents/datasets/div2k/own/valid/LR"]
+    hr_path: ["~/Documents/datasets/div2k/own/valid/HR"]
+#    lr_path: ["~/Documents/datasets/Flickr2K/own/valid/LR"]
+#    hr_path: ["~/Documents/datasets/Flickr2K/own/valid/HR"]
+
+
+    augment: False
+    scale: 4
+    patch_cropsize: False
+    pool_lr: True
+    pool_hr: True
+    is_train: False
+
+  test:
+    augment: False
+    scale: 4
+#    use_Y_channel_in_val: False
+    patch_cropsize: False
+    pool_lr: True
+    pool_hr: True
+    is_train: False
+#    lr_path: ["~/Documents/datasets/div2k/own/valid/LR"]
+#    hr_path: ["~/Documents/datasets/div2k/own/valid/HR"]
+    lr_path: ["~/Documents/datasets/Flickr2K/own/valid/LR"]
+    hr_path: ["~/Documents/datasets/Flickr2K/own/valid/HR"]
+
+
+loader:
+  train:
+    batch_size: 4 ##16
+    shuffle: True
+    num_workers: 6
+    pin_memory: True
+    persistent_workers: True
+  val:
+    batch_size: 1 ## 设置为1, 否则出错
+    shuffle: False
+    num_workers: 4
+    pin_memory: True
+
+  test:
+    batch_size: 1
+    shuffle: False
+    num_workers: 4
+    pin_memory: True
+
