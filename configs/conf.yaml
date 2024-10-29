@@ -1,7 +1,7 @@
 load_pretrained: False
 strict_load: False
-#pretrained_path: "./logs/ckpts/RTSR_N8_epochs600.pth"  ## for mini
-pretrained_path: "./logs/ckpts/RTSR_N16_epochs180.pth"  ## for standard
+
+pretrained_path: "./logs/ckpts/Sebic_attn6_channel16.pth"  ## attn=6
 
 name: RTSR
 
