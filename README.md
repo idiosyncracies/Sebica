@@ -28,6 +28,8 @@
 - Setup the mode, e.g., "standard" or "mini", and pth file path in the __name__ function of psnr_ssim_evaluate.py
 - Setup network, dataset path (in data->test) in conf.yaml accordingly
 - Run psnr_ssim_evaluate.py
+- Comparison as below:
+![Comparison with baseline](./comparison.png)
 
 ## Object detection test
 - Download the full dataset via official website, or 
